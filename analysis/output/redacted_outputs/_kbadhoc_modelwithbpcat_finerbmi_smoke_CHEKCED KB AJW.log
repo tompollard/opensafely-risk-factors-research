@@ -1,0 +1,119 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  E:\analyses\alex-tmp-repo-2\analysis\_kbadhoc_modelwithbpcat_finer
+> bmi_smoke.log
+  log type:  text
+ opened on:  25 Apr 2020, 09:55:25
+
+. 
+. stset stime_cpnsdeath, fail(cpnsdeath) enter(enter_date) origin(enter_date) i
+> d(patient_id) 
+
+                id:  patient_id
+     failure event:  cpnsdeath != 0 & cpnsdeath < .
+obs. time interval:  (stime_cpnsdeath[_n-1], stime_cpnsdeath]
+ enter on or after:  time enter_date
+ exit on or before:  failure
+    t for analysis:  (time-origin)
+            origin:  time enter_date
+
+------------------------------------------------------------------------------
+   17420832  total observations
+        135  multiple records at same instant                   PROBABLE ERROR
+             (stime_cpnsdeath[_n-1]==stime_cpnsdeath)
+        465  observations end on or before enter()
+------------------------------------------------------------------------------
+   17420232  observations remaining, representing
+   17420232  subjects
+      3,973  failures in single-failure-per-subject data
+ 1.3052e+09  total analysis time at risk and under observation
+                                                at risk from t =         0
+                                     earliest observed entry t =         0
+                                          last observed exit t =        75
+
+. 
+									***KB NOTE - MODEL BELOW HAS:
+									***BMI AS (NORMAL OR OVERWEIGHT OR MISSING [~22%]) VS OBESE I VS OBESE II VS OBESE III
+									***SMOKING AS NEVER vs FORMER vs CURRENT WITH (~4%) MISSING EXCLUDED (COMPLETE CASE)
+									***BP FITTED AS CATEGORIES - MISSINGS (~25%) ARE IN WITH NORMAL
+									***ETHNICITY OMITTED
+. 
+. basecoxmodel, age("age1 age2 age3")  bmi("i.bmiobese") smoke("i.smoke") bp("i
+> .bpcat") ethnicity(0)
+
+         failure _d:  cpnsdeath
+   analysis time _t:  (stime_cpnsdeath-origin)
+             origin:  time enter_date
+  enter on or after:  time enter_date
+                 id:  patient_id
+
+Iteration 0:   log likelihood = -52830.058
+Iteration 1:   log likelihood = -48545.409
+Iteration 2:   log likelihood = -46632.344
+Iteration 3:   log likelihood = -46593.805
+Iteration 4:   log likelihood = -46592.865
+Iteration 5:   log likelihood = -46592.844
+Iteration 6:   log likelihood = -46592.844
+Refining estimates:
+Iteration 0:   log likelihood = -46592.844
+
+Stratified Cox regr. -- Breslow method for ties
+
+No. of subjects =   16,601,070                  Number of obs    =  16,601,070
+No. of failures =        3,941
+Time at risk    =   1243749536
+                                                LR chi2(28)      =    12474.43
+Log likelihood  =   -46592.844                  Prob > chi2      =      0.0000
+
+------------------------------------------------------------------------------
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        age1 |   1.122557   .0340755     3.81   0.000     1.057719    1.191371
+        age2 |   .9947046   .0670198    -0.08   0.937     .8716518    1.135129
+        age3 |   .9757496    .153723    -0.16   0.876     .7165345    1.328739
+      1.male |   2.104903   .0721624    21.71   0.000     1.968115    2.251199
+             |
+    bmiobese |
+          1  |    1.34745   .0556331     7.22   0.000     1.242706    1.461022
+          2  |   1.735895   .1042218     9.19   0.000     1.543185    1.952671
+          3  |   2.781115   .2119873    13.42   0.000     2.395174    3.229243
+             |
+       smoke |
+     Former  |   1.213793   .0527452     4.46   0.000     1.114694    1.321701
+    Current  |   .9413076   .0570121    -1.00   0.318     .8359435    1.059952
+             |
+         imd |
+          2  |   .8300885   .0408003    -3.79   0.000     .7538525    .9140342
+          3  |   .7217168   .0367803    -6.40   0.000     .6531119    .7975281
+          4  |   .6534396   .0343304    -8.10   0.000     .5895017    .7243123
+          5  |   .6014152   .0324041    -9.44   0.000     .5411428    .6684008
+             |
+       bpcat |
+   Elevated  |   .7283698   .0385822    -5.98   0.000     .6565431    .8080544
+High, sta..  |   .6670136   .0303072    -8.91   0.000     .6101807    .7291399
+High, sta..  |   .6405189   .0295579    -9.65   0.000     .5851292    .7011519
+             |
+1.c~respir~e |   1.798834   .0741804    14.24   0.000     1.659163    1.950262
+    1.asthma |   1.221281   .0588534     4.15   0.000     1.111211    1.342255
+1.c~cardia~e |   1.337391   .0475678     8.17   0.000     1.247335    1.433949
+  1.diabetes |   1.847018   .0634239    17.87   0.000     1.726801    1.975605
+1.cancer_e~r |   1.510643   .1752445     3.56   0.000     1.203419    1.896299
+1.haemmali~r |   1.479602   .1570077     3.69   0.000     1.201766    1.821671
+1.c~liver_~e |    1.65216   .1891041     4.39   0.000     1.320155    2.067662
+1.stroke_d~a |   1.792846   .0782318    13.38   0.000     1.645888    1.952925
+1.other_ne~o |   2.196527   .1583181    10.92   0.000      1.90715    2.529812
+1.organ_tr~t |   5.371409   .9424477     9.58   0.000     3.808373    7.575947
+    1.spleen |   1.735537   .3993198     2.40   0.017     1.105568    2.724469
+1.ra_sle_p~s |   1.239415   .0679387     3.92   0.000     1.113161    1.379988
+------------------------------------------------------------------------------
+                                                             Stratified by stp
+   1:   1671.70 /        1 =    1671.7030
+
+. 
+. log close
+      name:  <unnamed>
+       log:  E:\analyses\alex-tmp-repo-2\analysis\_kbadhoc_modelwithbpcat_finer
+> bmi_smoke.log
+  log type:  text
+ closed on:  25 Apr 2020, 10:27:48
+-------------------------------------------------------------------------------
