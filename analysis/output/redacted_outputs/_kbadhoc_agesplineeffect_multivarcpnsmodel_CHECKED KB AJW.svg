@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This is a Stata 16.1 generated SVG file (http://www.stata.com) -->
+
+<svg version="1.1" width="5.50in" height="4.00in" viewBox="0 0 3960 2880" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<desc>Stata Graph - Graph</desc>
+	<rect x="0" y="0" width="3960" height="2880" style="fill:#EAF2F3;stroke:none"/>
+	<rect x="0.00" y="0.00" width="3959.88" height="2880.00" style="fill:#EAF2F3"/>
+	<rect x="2.88" y="2.88" width="3954.12" height="2874.24" style="fill:none;stroke:#EAF2F3;stroke-width:5.76"/>
+	<rect x="390.80" y="100.86" width="3468.22" height="2388.33" style="fill:#FFFFFF"/>
+	<rect x="393.68" y="103.74" width="3462.46" height="2382.57" style="fill:none;stroke:#FFFFFF;stroke-width:5.76"/>
+	<line x1="390.80" y1="2234.75" x2="3859.02" y2="2234.75" style="stroke:#EAF2F3;stroke-width:8.64"/>
+	<line x1="390.80" y1="1720.92" x2="3859.02" y2="1720.92" style="stroke:#EAF2F3;stroke-width:8.64"/>
+	<line x1="390.80" y1="1207.10" x2="3859.02" y2="1207.10" style="stroke:#EAF2F3;stroke-width:8.64"/>
+	<line x1="390.80" y1="693.27" x2="3859.02" y2="693.27" style="stroke:#EAF2F3;stroke-width:8.64"/>
+	<line x1="390.80" y1="179.44" x2="3859.02" y2="179.44" style="stroke:#EAF2F3;stroke-width:8.64"/>
+	<path d=" M454.04 2425.95 L492.52 2396.62 L530.89 2367.29 L569.25 2337.96 L607.74 2308.63 L646.10 2279.30 L684.59 2249.97 L722.95 2220.64 L761.31 2191.19 L799.80 2161.86 L838.16 2132.53 L876.52 2103.07 L915.01 2073.74 L953.37 2044.29 L991.86 2014.84 L1030.22 1985.38 L1068.58 1955.93 L1107.07 1926.35 L1145.43 1896.90 L1183.79 1867.32 L1222.28 1837.62 L1260.64 1808.04 L1299.13 1778.34 L1337.49 1748.64 L1375.85 1718.94 L1414.34 1689.12 L1452.70 1659.42 L1491.06 1629.84 L1529.55 1600.26 L1567.91 1570.81 L1606.40 1541.48 L1644.76 1512.27 L1683.12 1483.19 L1721.61 1454.36 L1759.97 1425.77 L1798.34 1397.43 L1836.82 1369.21 L1875.18 1341.37 L1913.67 1313.89 L1952.03 1286.67 L1990.39 1259.81 L2028.88 1233.33 L2067.24 1207.10 L2105.61 1181.23 L2144.09 1155.61 L2182.45 1130.37 L2220.94 1105.25 L2259.30 1080.50 L2297.67 1055.99 L2336.15 1031.61 L2374.51 1007.60 L2412.88 983.60 L2451.36 959.96 L2489.73 936.32 L2528.21 912.93 L2566.57 889.67 L2604.94 866.65 L2643.42 843.63 L2681.79 820.61 L2720.15 797.84 L2758.64 775.07 L2797.00 752.42 L2835.48 729.65 L2873.85 707.01 L2912.21 684.48 L2950.70 661.84 L2989.06 639.19 L3027.42 616.54 L3065.91 594.02 L3104.27 571.37 L3142.76 548.72 L3181.12 526.08 L3219.48 503.55 L3257.97 480.91 L3296.33 458.26 L3334.69 435.61 L3373.18 412.97 L3411.54 390.44 L3450.03 367.80 L3488.39 345.15 L3526.75 322.50 L3565.24 299.98 L3603.60 277.33 L3641.96 254.69 L3680.45 232.04 L3718.81 209.52 L3757.30 186.87 L3795.66 164.22" stroke-linejoin="round" style="fill:none;stroke:#1A476F;stroke-width:8.64"/>
+	<line x1="390.80" y1="2489.19" x2="390.80" y2="100.86" style="stroke:#000000;stroke-width:5.76"/>
+	<line x1="390.80" y1="2234.75" x2="350.83" y2="2234.75" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="300.72" y="2234.75" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" transform="rotate(-90 300.72,2234.75)" text-anchor="middle">-4</text>
+	<line x1="390.80" y1="1720.92" x2="350.83" y2="1720.92" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="300.72" y="1720.92" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" transform="rotate(-90 300.72,1720.92)" text-anchor="middle">-2</text>
+	<line x1="390.80" y1="1207.10" x2="350.83" y2="1207.10" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="300.72" y="1207.10" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" transform="rotate(-90 300.72,1207.10)" text-anchor="middle">0</text>
+	<line x1="390.80" y1="693.27" x2="350.83" y2="693.27" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="300.72" y="693.27" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" transform="rotate(-90 300.72,693.27)" text-anchor="middle">2</text>
+	<line x1="390.80" y1="179.44" x2="350.83" y2="179.44" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="300.72" y="179.44" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" transform="rotate(-90 300.72,179.44)" text-anchor="middle">4</text>
+	<text x="190.71" y="1294.96" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" transform="rotate(-90 190.71,1294.96)" text-anchor="middle">linear prediction i.e. logHR cf age 60</text>
+	<line x1="390.80" y1="2489.19" x2="3859.02" y2="2489.19" style="stroke:#000000;stroke-width:5.76"/>
+	<line x1="531.01" y1="2489.19" x2="531.01" y2="2529.16" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="531.01" y="2619.14" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" text-anchor="middle">20</text>
+	<line x1="1299.13" y1="2489.19" x2="1299.13" y2="2529.16" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="1299.13" y="2619.14" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" text-anchor="middle">40</text>
+	<line x1="2067.37" y1="2489.19" x2="2067.37" y2="2529.16" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="2067.37" y="2619.14" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" text-anchor="middle">60</text>
+	<line x1="2835.48" y1="2489.19" x2="2835.48" y2="2529.16" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="2835.48" y="2619.14" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" text-anchor="middle">80</text>
+	<line x1="3603.72" y1="2489.19" x2="3603.72" y2="2529.16" style="stroke:#000000;stroke-width:5.76"/>
+	<text x="3603.72" y="2619.14" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" text-anchor="middle">100</text>
+	<text x="2124.91" y="2729.16" style="font-family:'Helvetica';font-size:99.99px;fill:#000000" text-anchor="middle">Age (years)</text>
+</svg>
