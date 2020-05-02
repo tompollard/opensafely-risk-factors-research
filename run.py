@@ -177,6 +177,41 @@ def check_output():
     return output
 
 
+def chart(name, series, dtype):
+    import base64
+    from io import BytesIO
+    from matplotlib import pyplot as plt
+
+    from pandas.api.types import is_categorical_dtype
+    from pandas.api.types import is_bool_dtype
+
+    img = BytesIO()
+
+    if is_categorical_dtype(dtype) or is_bool_dtype(dtype):
+        fig = plt.figure(figsize=(4, 1))
+        ax = fig.add_subplot(111)
+        value_counts = series.value_counts()
+        value_counts.plot(ax=ax, kind="bar")
+        fig.subplots_adjust(left=0)
+        fig.subplots_adjust(right=0.99)
+        fig.subplots_adjust(bottom=0.5)
+        fig.subplots_adjust(top=0.9)
+    else:
+        # for date things, we want incidence *and* time series
+        fig = plt.figure(figsize=(4, 1))
+        ax = fig.add_subplot(111)
+        series.hist()
+        fig.subplots_adjust(left=0)
+        fig.subplots_adjust(right=0.99)
+        fig.subplots_adjust(bottom=0.1)
+        fig.subplots_adjust(top=0.9)
+
+    plt.savefig(img, transparent=True, bbox_inches="tight")
+    img.seek(0)
+    plt.close()
+    return base64.b64encode(img.read()).decode("UTF-8")
+
+
 def generate_cohort():
     sys.path.extend([relative_dir(), os.path.join(relative_dir(), "analysis")])
     # Avoid creating __pycache__ files in the analysis directory
@@ -185,6 +220,39 @@ def generate_cohort():
 
     with_sqlcmd = shutil.which("sqlcmd") is not None
     study.to_csv("analysis/input.csv", with_sqlcmd=with_sqlcmd)
+    print("Successfully created cohort and covariates at analysis/input.csv")
+
+
+def make_cohort_report():
+    from pandas.api.types import is_datetime64_dtype
+
+    sys.path.extend([relative_dir(), os.path.join(relative_dir(), "analysis")])
+    # Avoid creating __pycache__ files in the analysis directory
+    sys.dont_write_bytecode = True
+    from study_definition import study
+
+    df = study.csv_to_df("analysis/input.csv")
+    descriptives = df.describe(include="all")
+
+    for name, dtype in zip(df.columns, df.dtypes):
+        img_list = []
+        img_list.append(
+            '<div><img src="data:image/png;base64,{}"/></div>'.format(
+                chart(name, df[name], dtype)
+            )
+        )
+        if is_datetime64_dtype(dtype):
+            # also do a null / not null plot
+            img_list.append(
+                '<div><img src="data:image/png;base64,{}"/></div>'.format(
+                    chart(name, df[name].isnull(), dtype)
+                )
+            )
+        descriptives.loc["chart", name] = "".join(img_list)
+
+    with open("descr.html", "w") as f:
+        f.write(descriptives.to_html(escape=False))
+
     print("Successfully created cohort and covariates at analysis/input.csv")
 
 
@@ -272,7 +340,7 @@ def main(from_cmd_line=False):
             docker_run(notebook_tag, "python", *args)
         else:
             os.environ["DATABASE_URL"] = options.database_url
-            generate_cohort()
+            make_cohort_report()
     elif options.which == "notebook":
         if not options.skip_build:
             docker_build(notebook_tag)

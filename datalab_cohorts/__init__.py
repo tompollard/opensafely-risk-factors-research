@@ -8,6 +8,8 @@ from urllib.parse import urlparse, unquote
 
 import pyodbc
 
+import pandas as pd
+
 from .expressions import format_expression
 
 
@@ -86,6 +88,9 @@ class StudyDefinition:
         else:
             result = self.execute_query()
             unique_check = UniqueCheck()
+            with open(filename + ".schema", "w", newline="") as schemafile:
+                data_types = [x[1].__name__ for x in result.description]
+                schemafile.write(",".join(data_types))
             with open(filename, "w", newline="") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow([x[0] for x in result.description])
@@ -93,6 +98,51 @@ class StudyDefinition:
                     unique_check.add(row[0])
                     writer.writerow(row)
             unique_check.assert_unique_ids()
+
+    def csv_to_df(self, csv_name):
+        def tobool(val):
+            if val == "":
+                return False
+            if val == "0":
+                return False
+            return True
+
+        dtypes = {}
+        parse_dates = []
+        converters = {}
+        for name, (funcname, kwargs) in self.covariate_definitions.items():
+            returning = kwargs.get("returning", None)
+            if returning and (
+                returning == "date"
+                or returning.startswith("date_")
+                or returning.endswith("_date")
+                or "_date_" in returning
+            ):
+                parse_dates.append(name)
+            elif returning == "numeric_value":
+                dtypes[name] = "float"
+            elif returning == "number_of_matches_in_period":
+                dtypes[name] = "int"
+            elif returning == "binary_flag":
+                converters[name] = tobool
+                dtypes[name] = "boolean"
+            elif returning == "category" or "category_definitions" in kwargs:
+                dtypes[name] = "category"
+            elif "include_measurement_date" in kwargs:
+                dtypes[name] = "float"
+                if kwargs["include_measurement_date"]:
+                    parse_dates.append(name + "_date_measured")
+            elif returning:
+                dtypes[name] = "category"
+            elif name == "age":
+                dtypes[name] = "int"
+            elif name == "sex":
+                dtypes[name] = "category"
+            else:
+                raise ValueError(f"Unable to impute type for {name}")
+        return pd.read_csv(
+            csv_name, dtype=dtypes, converters=converters, parse_dates=parse_dates
+        )
 
     def to_dicts(self):
         result = self.execute_query()
