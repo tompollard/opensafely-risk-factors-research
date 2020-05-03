@@ -258,7 +258,7 @@ def make_cohort_report():
             # also do a null / not null plot
             img_list.append(
                 '<div><img src="data:image/png;base64,{}"/></div>'.format(
-                    chart(name, df[name].isnull(), dtype)
+                    chart(name, df[name].isnull(), bool)
                 )
             )
         descriptives.loc["chart", name] = "".join(img_list)
