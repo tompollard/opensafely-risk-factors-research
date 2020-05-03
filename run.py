@@ -181,10 +181,13 @@ def chart(name, series, dtype):
     import base64
     from io import BytesIO
     from matplotlib import pyplot as plt
-
+    import numpy as np
     from pandas.api.types import is_categorical_dtype
     from pandas.api.types import is_bool_dtype
+    from pandas.api.types import is_datetime64_dtype
+    from datetime import datetime
 
+    FLOOR_DATE = datetime(1910, 1, 1)
     img = BytesIO()
 
     if is_categorical_dtype(dtype) or is_bool_dtype(dtype):
@@ -197,7 +200,15 @@ def chart(name, series, dtype):
         fig.subplots_adjust(bottom=0.5)
         fig.subplots_adjust(top=0.9)
     else:
-        # for date things, we want incidence *and* time series
+        if is_datetime64_dtype(dtype):
+            # Early dates are dummy values
+            series = series[series > FLOOR_DATE]
+        else:
+            # it's numeric. We should trim percentiles
+            series[
+                (series < np.percentile(series, 99))
+                & (series > np.percentile(series, 1))
+            ]
         fig = plt.figure(figsize=(4, 1))
         ax = fig.add_subplot(111)
         series.hist()
