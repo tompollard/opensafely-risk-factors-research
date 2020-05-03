@@ -15,6 +15,19 @@ import urllib.request
 import webbrowser
 
 
+import base64
+from io import BytesIO
+from matplotlib import pyplot as plt
+import numpy as np
+from pandas.api.types import is_categorical_dtype
+from pandas.api.types import is_bool_dtype
+from pandas.api.types import is_datetime64_dtype
+from pandas.api.types import is_numeric_dtype
+
+from datetime import datetime
+import seaborn as sns
+
+
 try:
     from gooey import Gooey
     from gooey import GooeyParser as ArgumentParser
@@ -178,45 +191,52 @@ def check_output():
 
 
 def chart(name, series, dtype):
-    import base64
-    from io import BytesIO
-    from matplotlib import pyplot as plt
-    import numpy as np
-    from pandas.api.types import is_categorical_dtype
-    from pandas.api.types import is_bool_dtype
-    from pandas.api.types import is_datetime64_dtype
-    from pandas.api.types import is_numeric_dtype
-    from datetime import datetime
-
-    FLOOR_DATE = datetime(1910, 1, 1)
+    FLOOR_DATE = datetime(1960, 1, 1)
+    CEILING_DATE = datetime.today()
     img = BytesIO()
-
-    if is_categorical_dtype(dtype) or is_bool_dtype(dtype):
-        fig = plt.figure(figsize=(4, 1))
+    # Setting figure sizes in seaborn is a bit weird:
+    # https://stackoverflow.com/a/23973562/559140
+    if is_categorical_dtype(dtype):
+        sns.set_style("ticks")
+        sns.catplot(
+            x=name, data=series.to_frame(), kind="count", height=3, aspect=3 / 2
+        )
+        plt.xticks(rotation=45)
+    elif is_bool_dtype(dtype):
+        sns.set_style("ticks")
+        sns.catplot(x=name, data=series.to_frame(), kind="count", height=2, aspect=1)
+        plt.xticks(rotation=45)
+    elif is_datetime64_dtype(dtype):
+        # Early dates are dummy values; I don't know what late dates
+        # are but presumably just dud data
+        series = series[(series > FLOOR_DATE) & (series <= CEILING_DATE)]
+        # Set bin numbers appropriate to the time window
+        delta = series.max() - series.min()
+        if delta.days <= 31:
+            bins = delta.days
+        elif delta.days <= 365 * 10:
+            bins = delta.days / 31
+        else:
+            bins = delta.days / 365
+        if bins < 1:
+            bins = 1
+        fig = plt.figure(figsize=(5, 2))
         ax = fig.add_subplot(111)
-        value_counts = series.value_counts()
-        value_counts.plot(ax=ax, kind="bar")
-        fig.subplots_adjust(left=0)
-        fig.subplots_adjust(right=0.99)
-        fig.subplots_adjust(bottom=0.5)
-        fig.subplots_adjust(top=0.9)
+        series.hist(bins=int(bins), ax=ax)
+        plt.xticks(rotation=45, ha="right")
+    elif is_numeric_dtype(dtype):
+        # Trim percentiles and negatives which are usually bad data
+        series = series[
+            (series < np.percentile(series, 95))
+            & (series > np.percentile(series, 5))
+            & (series > 0)
+        ]
+        fig = plt.figure(figsize=(5, 2))
+        ax = fig.add_subplot(111)
+        sns.distplot(series, kde=False, ax=ax)
+        plt.xticks(rotation=45)
     else:
-        if is_datetime64_dtype(dtype):
-            # Early dates are dummy values
-            series = series[series > FLOOR_DATE]
-        elif is_numeric_dtype(dtype):
-            # Trim percentiles which are usually bad data
-            series[
-                (series < np.percentile(series, 99))
-                & (series > np.percentile(series, 1))
-            ]
-        fig = plt.figure(figsize=(4, 1))
-        ax = fig.add_subplot(111)
-        series.hist()
-        fig.subplots_adjust(left=0)
-        fig.subplots_adjust(right=0.99)
-        fig.subplots_adjust(bottom=0.1)
-        fig.subplots_adjust(top=0.9)
+        raise ValueError()
 
     plt.savefig(img, transparent=True, bbox_inches="tight")
     img.seek(0)
@@ -236,8 +256,6 @@ def generate_cohort():
 
 
 def make_cohort_report():
-    from pandas.api.types import is_datetime64_dtype
-
     sys.path.extend([relative_dir(), os.path.join(relative_dir(), "analysis")])
     # Avoid creating __pycache__ files in the analysis directory
     sys.dont_write_bytecode = True
@@ -249,24 +267,55 @@ def make_cohort_report():
     for name, dtype in zip(df.columns, df.dtypes):
         if name == "patient_id":
             continue
-        img_list = []
-        img_list.append(
-            '<div><img src="data:image/png;base64,{}"/></div>'.format(
-                chart(name, df[name], dtype)
-            )
+        main_chart = '<div><img src="data:image/png;base64,{}"/></div>'.format(
+            chart(name, df[name], dtype)
         )
+        empty_values_chart = ""
         if is_datetime64_dtype(dtype):
             # also do a null / not null plot
-            img_list.append(
-                '<div><img src="data:image/png;base64,{}"/></div>'.format(
-                    chart(name, df[name].isnull(), bool)
-                )
+            empty_values_chart = '<div><img src="data:image/png;base64,{}"/></div>'.format(
+                chart(name, df[name].isnull(), bool)
             )
-        descriptives.loc["chart", name] = "".join(img_list)
+        elif is_numeric_dtype(dtype):
+            # also do a null / not null plot
+            empty_values_chart = '<div><img src="data:image/png;base64,{}"/></div>'.format(
+                chart(name, df[name] > 0, bool)
+            )
+        descriptives.loc["values", name] = main_chart
+        descriptives.loc["nulls", name] = empty_values_chart
 
     with open("descr.html", "w") as f:
-        f.write(descriptives.to_html(escape=False))
 
+        f.write(
+            """<html>
+<head>
+  <style>
+    table {
+      text-align: left;
+      position: relative;
+      border-collapse: collapse;
+    }
+    td, th {
+      padding: 8px;
+      margin: 2px;
+    }
+    td {
+      border-left: solid 1px black;
+    }
+    tr:nth-child(even) {background: #EEE}
+    tr:nth-child(odd) {background: #FFF}
+    tbody th:first-child {
+      position: sticky;
+      left: 0px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>"""
+        )
+
+        f.write(descriptives.to_html(escape=False, na_rep="", justify="left", border=0))
+        f.write("</body></html>")
     print("Successfully created cohort and covariates at analysis/input.csv")
 
 

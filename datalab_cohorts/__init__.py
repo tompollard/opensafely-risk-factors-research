@@ -107,11 +107,31 @@ class StudyDefinition:
                 return False
             return True
 
+        def add_month_and_day_to_date(val):
+            if val:
+                return val + "-01-01"
+            return val
+
+        def add_day_to_date(val):
+            if val:
+                return val + "-01"
+            return val
+
         dtypes = {}
         parse_dates = []
         converters = {}
-        for name, (funcname, kwargs) in self.covariate_definitions.items():
+        implicit_dates = []
+        definitions = list(self.covariate_definitions.items())
+        import copy
+
+        for name, (funcname, kwargs) in copy.deepcopy(definitions):
+            if "include_date_of_match" in kwargs and kwargs["include_date_of_match"]:
+                kwargs["returning"] = "date"
+                implicit_dates.append((name + "_date", (funcname, kwargs)))
+
+        for name, (funcname, kwargs) in implicit_dates + definitions:
             returning = kwargs.get("returning", None)
+
             if returning and (
                 returning == "date"
                 or returning.startswith("date_")
@@ -119,6 +139,10 @@ class StudyDefinition:
                 or "_date_" in returning
             ):
                 parse_dates.append(name)
+                # if granularity doesn't include a day, add one
+                if "include_month" in kwargs and kwargs["include_month"]:
+                    converters[name] = add_day_to_date
+
             elif returning == "numeric_value":
                 dtypes[name] = "float"
             elif returning == "number_of_matches_in_period":
