@@ -235,6 +235,8 @@ def make_cohort_report():
     descriptives = df.describe(include="all")
 
     for name, dtype in zip(df.columns, df.dtypes):
+        if name == "patient_id":
+            continue
         img_list = []
         img_list.append(
             '<div><img src="data:image/png;base64,{}"/></div>'.format(
