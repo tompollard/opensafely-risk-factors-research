@@ -185,6 +185,7 @@ def chart(name, series, dtype):
     from pandas.api.types import is_categorical_dtype
     from pandas.api.types import is_bool_dtype
     from pandas.api.types import is_datetime64_dtype
+    from pandas.api.types import is_numeric_dtype
     from datetime import datetime
 
     FLOOR_DATE = datetime(1910, 1, 1)
@@ -203,8 +204,8 @@ def chart(name, series, dtype):
         if is_datetime64_dtype(dtype):
             # Early dates are dummy values
             series = series[series > FLOOR_DATE]
-        else:
-            # it's numeric. We should trim percentiles
+        elif is_numeric_dtype(dtype):
+            # Trim percentiles which are usually bad data
             series[
                 (series < np.percentile(series, 99))
                 & (series > np.percentile(series, 1))
